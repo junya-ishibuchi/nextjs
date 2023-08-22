@@ -22,6 +22,7 @@ test("This select has an accessible name", () => {
 
 test("You can change an option", async () => {
   const { options, combobox } = setup();
-  await user.selectOptions(combobox, options[0].value);
   expect(combobox).toHaveDisplayValue(options[0].value);
+  await user.selectOptions(combobox, options[1].value);
+  expect(combobox).toHaveDisplayValue(options[1].value);
 });

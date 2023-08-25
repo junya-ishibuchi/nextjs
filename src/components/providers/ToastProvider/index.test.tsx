@@ -46,7 +46,7 @@ test.each<ToastState>([
   { isShown: true, message: "succeed", style: "succeed" },
   { isShown: true, message: "failed", style: "failed" },
   { isShown: true, message: "busy", style: "busy" },
-])("The toast can work according to defaultState", (defaultState: ToastState) => {
+])("$message", (defaultState: ToastState) => {
   render(<ToastProvider defaultState={defaultState}>{null}</ToastProvider>);
   expect(screen.getByRole("alert")).toHaveTextContent(defaultState.message);
 });

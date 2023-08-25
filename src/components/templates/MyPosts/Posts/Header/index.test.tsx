@@ -16,6 +16,14 @@ test.each([
   expect(screen.getByRole("combobox")).toHaveDisplayValue(option.label);
 });
 
+test("default status is 'すべて'", () => {
+  mockRouter.setCurrentUrl('my/posts');
+
+  render(<Header />);
+
+  expect(screen.getByRole("combobox")).toHaveDisplayValue("すべて");
+})
+
 test.each([
   { value: "all", label: "すべて" },
   { value: "public", label: "公開" },

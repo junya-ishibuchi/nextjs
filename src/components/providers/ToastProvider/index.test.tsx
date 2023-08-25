@@ -4,48 +4,49 @@ import userEvent from "@testing-library/user-event";
 
 const user = userEvent.setup();
 
-const clickToShowMessage = "click to show";
+const toastMessage = "show a toast";
 
-const ChildComponent = () => {
-  const {showToast, hideToast} = useToastAction();
+const ChildComponentForShowing = () => {
+  const {showToast} = useToastAction();
   return (
-    <>
-      <button onClick={() => showToast({message: clickToShowMessage}) }>show</button>
-      <button onClick={() => hideToast() }>hide</button>
-    </>
+    <button onClick={() => showToast({message: toastMessage}) }>show</button>
   );
 };
 
-const setUp = (defaultState?: Partial<ToastState>) => {
-  const toast = render(
-    <ToastProvider defaultState={defaultState}>
-      <ChildComponent />
-    </ToastProvider>
-  )
+const ChildComponentForHiding = () => {
+  const {hideToast} = useToastAction();
+  return (
+    <button onClick={() => hideToast() }>hide</button>
+  );
+};
 
-  return { toast }
-}
-
-test("The toast shows when you use defaultState", () => {
-  const toastMessage = "Toast message is here."
-  setUp({isShown: true, message: toastMessage, style: "succeed"});
-  expect(screen.getByText(toastMessage)).toBeInTheDocument();
-});
-
-test("The toast doesn't show when you use defaultState", () => {
-  const toastMessage = "Toast message is here."
-  setUp({isShown: false, message: toastMessage, style: "succeed"});
-  expect(screen.queryByText(toastMessage)).not.toBeInTheDocument();
+test.each<ToastState>([
+  { isShown: true, message: "succeed", style: "succeed" },
+  { isShown: true, message: "failed", style: "failed" },
+  { isShown: true, message: "busy", style: "busy" },
+])("The toast can work according to defaultState", (defaultState: ToastState) => {
+  render(<ToastProvider defaultState={defaultState}>{null}</ToastProvider>);
+  expect(screen.getByRole("alert")).toHaveTextContent(defaultState.message);
 });
 
 test("can show the toast from child components", async () => {
-  setUp();
-  await user.click(screen.getByRole("button", { name: "show" }));
-  expect(screen.getByText(clickToShowMessage)).toBeInTheDocument();
+  render(
+    <ToastProvider>
+      <ChildComponentForShowing />
+    </ToastProvider>
+  );
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button"));
+  expect(screen.getByRole("alert")).toHaveTextContent(toastMessage);
 });
 
 test("can hide the toast from child components", async () => {
-  setUp();
-  await user.click(screen.getByRole("button", { name: "hide" }));
-  expect(screen.queryByText(clickToShowMessage)).not.toBeInTheDocument();
+  render(
+    <ToastProvider defaultState={{ isShown: true }}>
+      <ChildComponentForHiding />
+    </ToastProvider>
+  );
+  expect(screen.getByRole("alert")).toBeInTheDocument();
+  await user.click(screen.getByRole("button"));
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
 });

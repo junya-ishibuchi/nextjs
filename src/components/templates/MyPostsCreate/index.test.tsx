@@ -1,9 +1,6 @@
-import * as MyPosts from "@/services/client/MyPosts/__mock__/msw";
-import * as MyProfile from "@/services/client/MyProfile/__mock__/msw";
-import { mockUploadImage } from "@/services/client/UploadImage/__mock__/jest";
-import { selectImageFile, setupMockServer } from "@/tests/jest";
-import { composeStories } from "@storybook/testing-react";
-import { render, screen, waitFor } from "@testing-library/react";
+import {selectImageFile} from "@/tests/jest";
+import {composeStories} from "@storybook/testing-react";
+import {render, screen, waitFor} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import mockRouter from "next-router-mock";
 import * as stories from "./index.stories";
@@ -38,12 +35,6 @@ async function setup() {
     selectImage,
   };
 }
-
-setupMockServer(...MyPosts.handlers, ...MyProfile.handlers);
-beforeEach(() => {
-  mockUploadImage();
-  mockRouter.setCurrentUrl("/my/posts/create");
-});
 
 describe("AlertDialog", () => {
   test("公開を試みた時、AlertDialog が表示される", async () => {
